@@ -8,7 +8,9 @@ function Toggle({children}) {
   const [on, setOn] = React.useState(false)
   const toggle = () => setOn(!on)
   return React.Children.map(children, child =>
-    React.cloneElement(child, {on, toggle}),
+    typeof child.type === 'string'
+    ? child
+    : React.cloneElement(child, {on, toggle})
   )
 
   // 📜 https://reactjs.org/docs/react-api.html#reactchildren
