@@ -40,8 +40,20 @@ function useToggle({
   const [state, dispatch] = React.useReducer(reducer, initialState)
 
   const onIsControlled = controlledOn !== null
-
+  const {current: onWasControlled} = React.useRef(onIsControlled)
   const on = onIsControlled ? controlledOn : state.on
+  
+  React.useEffect(() => {
+    warning(
+      !(onIsControlled && !onWasControlled),
+      `\`useToggle\` is changing from uncontrolled to be controlled. Components should not switch from uncontrolled to controlled (or vice versa). Decide between using a controlled or uncontrolled \`useToggle\` for the lifetime of the component. Check the \`on\` prop.`,
+    )
+    warning(
+      !(!onIsControlled && onWasControlled),
+      `\`useToggle\` is changing from controlled to be uncontrolled. Components should not switch from uncontrolled to controlled (or vice versa). Decide between using a controlled or uncontrolled \`useToggle\` for the lifetime of the component. Check the \`on\` prop.`,
+    )
+  }, [onIsControlled, onWasControlled])
+  
   warning(
     !(!onChange && on && !readOnly),
     `An \`on\` prop was provided to useToggle without an \`onChange\` handler. This will render a read-only toggle. If you want it to be mutable, use \`initialOn\`. Otherwise, set either \`onChange\` or \`readOnly\`.`,
